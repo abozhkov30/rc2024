@@ -3,8 +3,11 @@ from pprint import pprint
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
+from aiogram import types
 from settings import BOT_TOKEN
-from crud_function import insert_in_users
+from crud_function import insert_in_users, update_profiles
+import time
+
 
 loop = asyncio.get_event_loop()
 bot = Bot(token=BOT_TOKEN)
@@ -34,9 +37,28 @@ async def command_start_handler(message: Message) -> None:
     # pprint(message.from_user)
 
 
+
 @dp.message()
-async def echo(message: Message):
-    await message.answer(message.text)
+async def handle_command(message: types.Message) -> None:
+    """
+    This handler receives messages with a range of command
+    """
+    if message.text.startswith('/activate'):
+        if await update_profiles(message.from_user.id, True, time.time()):
+            await message.answer("Вы добавлены в таблицу!")
+    if message.text.startswith('/deactivate'):
+        if await update_profiles(message.from_user.id, False, time.time()):
+            await message.answer("Вы удалены из таблицы!")
+
+        
+
+
+
+
+
+# @dp.message()
+# async def echo(message: Message):
+#     await message.answer(message.text)
 
 
 
